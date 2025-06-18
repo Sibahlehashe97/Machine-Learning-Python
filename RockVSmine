@@ -1,0 +1,171 @@
+Sonar Rock vs Mine Classification
+This program uses Logistic Regression to classify sonar signals as either "Mine" or "Rock".
+"""
+
+# Import necessary libraries
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+
+# Load the sonar dataset into a pandas DataFrame
+# Dataset contains 60 sonar frequency features + 1 label (R or M)
+sonar_data = pd.read_csv('/content/Copy of sonar data.csv', header=None)
+
+# Display the first few rows of the dataset
+print("First 5 rows of the dataset:")
+print(sonar_data.head())
+
+# Display the shape (rows, columns) of the dataset
+print("\nDataset shape:", sonar_data.shape)
+
+# Display statistical summary of the dataset
+print("\nSummary statistics:")
+print(sonar_data.describe())
+
+# Display how many of each class (R = Rock, M = Mine) exist
+print("\nLabel counts:")
+print(sonar_data[60].value_counts())
+
+# View the mean feature values for each class (optional analysis)
+print("\nAverage feature values by class:")
+print(sonar_data.groupby(60).mean())
+
+# Separate features (X) and target labels (Y)
+X = sonar_data.drop(columns=60, axis=1)
+Y = sonar_data[60]
+
+print("\nFeature sample (X):")
+print(X.head())
+print("\nTarget sample (Y):")
+print(Y.head())
+
+# Split the dataset into training and testing sets (90% train, 10% test)
+X_train, X_test, Y_train, Y_test = train_test_split(
+    X, Y, test_size=0.1, stratify=Y, random_state=1)
+
+print("\nShapes - Full:", X.shape, "| Train:", X_train.shape, "| Test:", X_test.shape)
+
+# Initialize the Logistic Regression model
+model = LogisticRegression(max_iter=1000)
+
+# Train the model using training data
+model.fit(X_train, Y_train)
+
+# Evaluate accuracy on the training data
+X_train_prediction = model.predict(X_train)
+training_data_accuracy = accuracy_score(Y_train, X_train_prediction)
+print("\nTraining Accuracy:", training_data_accuracy)
+
+# Evaluate accuracy on the test data
+X_test_prediction = model.predict(X_test)
+test_data_accuracy = accuracy_score(Y_test, X_test_prediction)
+print("Testing Accuracy:", test_data_accuracy)
+
+# -------------------------------------------
+# Predicting on a new input sample
+# -------------------------------------------
+
+# Example input data (length must be 60)
+input_data = (
+    0.0762, 0.0666, 0.0481, 0.0394, 0.0590, 0.0649, 0.1209, 0.2467, 0.3564, 0.4459,
+    0.4152, 0.3952, 0.4256, 0.4135, 0.4528, 0.5326, 0.7306, 0.6193, 0.2032, 0.4636,
+    0.4148, 0.4292, 0.5730, 0.5399, 0.3161, 0.2285, 0.6995, 1.0000, 0.7262, 0.4724,
+    0.5103, 0.5459, 0.2881, 0.0981, 0.1951, 0.4181, 0.4604, 0.3217, 0.2828, 0.2430,
+    0.1979, 0.2444, 0.1847, 0.0841, 0.0692, 0.0528, 0.0357, 0.0085, 0.0230, 0.0046,
+    0.0156, 0.0031, 0.0054, 0.0105, 0.0110, 0.0015, 0.0072, 0.0048, 0.0107, 0.0094
+)
+
+# Convert input to NumPy array and reshape for prediction
+input_data_array = np.asarray(input_data).reshape(1, -1)
+
+# Make prediction
+prediction = model.predict(input_data_array)
+print("\nPrediction result:", prediction)
+
+# Output human-readable result
+if prediction[0] == 'R':
+    print("Result: The object is a **Rock**.")
+else:
+    print("Result: The object is a **Mine**.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+2. Exploratory Data Analysis:
+python
+Copy
+Edit
+sonar_data.shape, sonar_data.describe(), sonar_data[60].value_counts()
+Shows the structure, statistical summary, and class distribution of the data. Useful to understand balance and feature range.
+
+3. Data Splitting:
+python
+Copy
+Edit
+X = sonar_data.drop(columns=60)
+Y = sonar_data[60]
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.1, stratify=Y, random_state=1)
+Splits the data into 90% training and 10% testing sets.
+
+Stratified split ensures class balance is maintained.
+
+4. Model Training:
+python
+Copy
+Edit
+model = LogisticRegression()
+model.fit(X_train, Y_train)
+Trains a Logistic Regression model using the training data.
+
+5. Model Evaluation:
+python
+Copy
+Edit
+accuracy_score(model.predict(X_train), Y_train)
+accuracy_score(model.predict(X_test), Y_test)
+Calculates accuracy on both training and testing sets to assess overfitting or underfitting.
+
+6. Making Predictions:
+python
+Copy
+Edit
+input_data = (...)  # new sonar signal
+input_data_as_numpy_array = np.asarray(input_data).reshape(1, -1)
+prediction = model.predict(input_data_as_numpy_array)
+This section takes a single sonar reading and predicts if it represents a rock or a mine.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
